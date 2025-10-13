@@ -14,36 +14,43 @@ import 'core/ui/ui_config.dart';
 import 'core/ui/widgets/android_back_button_handler.dart';
 
 Future<void> main() async {
-  await SentryService.init(
-    appRunner: () async {
-      // Lock orientation to landscape for Android
-      if (Platform.isAndroid) {
-        await SystemChrome.setPreferredOrientations([
-          DeviceOrientation.landscapeLeft,
-          DeviceOrientation.landscapeRight,
-        ]);
-      }
+  // Wrapper para inicialização do app
+  Future<void> appRunner() async {
+    // Lock orientation to landscape for Android
+    if (Platform.isAndroid) {
+      await SystemChrome.setPreferredOrientations([
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight,
+      ]);
+    }
 
-      await ApplicationConfig().consfigureApp();
+    await ApplicationConfig().consfigureApp();
 
-      // Initialize window manager only for Windows
-      if (Platform.isWindows) {
-        await windowManager.ensureInitialized();
-        final WindowOptions windowOptions = const WindowOptions(
-          size: Size(1014, 624),
-          center: true,
-        );
-        windowManager.waitUntilReadyToShow(windowOptions, () async {
-          await windowManager.show();
-          await windowManager.focus();
-        });
-      }
+    // Initialize window manager only for Windows
+    if (Platform.isWindows) {
+      await windowManager.ensureInitialized();
+      final WindowOptions windowOptions = const WindowOptions(
+        size: Size(1014, 624),
+        center: true,
+      );
+      windowManager.waitUntilReadyToShow(windowOptions, () async {
+        await windowManager.show();
+        await windowManager.focus();
+      });
+    }
 
-      await Injector.setup();
-      ErrorHandler.setupErrorHandling();
-      runApp(const Weblurk());
-    },
-  );
+    await Injector.setup();
+    ErrorHandler.setupErrorHandling();
+    runApp(const Weblurk());
+  }
+
+  // Sentry desabilitado no Linux devido a incompatibilidade com GLX
+  // Causa: BadAccess error ao tentar acessar recursos gráficos do X Window System
+  if (Platform.isLinux) {
+    await appRunner();
+  } else {
+    await SentryService.init(appRunner: appRunner);
+  }
 }
 
 class Weblurk extends StatefulWidget {
