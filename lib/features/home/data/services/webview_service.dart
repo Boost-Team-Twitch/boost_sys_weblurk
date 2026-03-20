@@ -71,6 +71,20 @@ class WebViewServiceImpl implements WebViewService {
             }
           }
           
+          // Específico para Kick player
+          const kickPlayer = document.querySelector('video.kick-video-player');
+          if (kickPlayer) {
+            kickPlayer.muted = true;
+            kickPlayer.volume = 0;
+          }
+          
+          // Seletores alternativos para Kick
+          const kickVideo = document.querySelector('[class*="kick"][class*="player"] video');
+          if (kickVideo && kickVideo !== kickPlayer) {
+            kickVideo.muted = true;
+            kickVideo.volume = 0;
+          }
+          
           const iframes = document.querySelectorAll('iframe');
           iframes.forEach(iframe => {
             try {
@@ -136,6 +150,20 @@ class WebViewServiceImpl implements WebViewService {
             }
           }
           
+          // Específico para Kick player
+          const kickPlayer = document.querySelector('video.kick-video-player');
+          if (kickPlayer) {
+            kickPlayer.muted = false;
+            kickPlayer.volume = 1;
+          }
+          
+          // Seletores alternativos para Kick
+          const kickVideo = document.querySelector('[class*="kick"][class*="player"] video');
+          if (kickVideo && kickVideo !== kickPlayer) {
+            kickVideo.muted = false;
+            kickVideo.volume = 1;
+          }
+          
           const iframes = document.querySelectorAll('iframe');
           iframes.forEach(iframe => {
             try {
@@ -196,6 +224,20 @@ class WebViewServiceImpl implements WebViewService {
               video.volume = targetVolume;
               video.muted = targetVolume === 0;
             }
+          }
+          
+          // Específico para Kick player
+          const kickPlayer = document.querySelector('video.kick-video-player');
+          if (kickPlayer) {
+            kickPlayer.volume = targetVolume;
+            kickPlayer.muted = targetVolume === 0;
+          }
+          
+          // Seletores alternativos para Kick
+          const kickVideo = document.querySelector('[class*="kick"][class*="player"] video');
+          if (kickVideo && kickVideo !== kickPlayer) {
+            kickVideo.volume = targetVolume;
+            kickVideo.muted = targetVolume === 0;
           }
           
           const iframes = document.querySelectorAll('iframe');
@@ -274,6 +316,40 @@ class WebViewServiceImpl implements WebViewService {
                 }).catch(e2 => console.log('[Twitch Player] Erro mesmo mutado:', e2));
               });
             }
+          }
+          
+          // Específico para Kick player
+          const kickPlayer = document.querySelector('video.kick-video-player');
+          if (kickPlayer && kickPlayer.paused) {
+            console.log('[Kick Player] Forçando autoplay...');
+            kickPlayer.autoplay = true;
+            
+            // Tenta dar play
+            kickPlayer.play().then(() => {
+              console.log('[Kick Player] Autoplay iniciado com sucesso');
+            }).catch(e => {
+              console.log('[Kick Player] Erro ao iniciar autoplay:', e);
+              // Fallback: tenta com mute temporário
+              kickPlayer.muted = true;
+              kickPlayer.play().then(() => {
+                // Após 2 segundos, volta o som
+                setTimeout(() => {
+                  kickPlayer.muted = false;
+                }, 2000);
+              }).catch(e2 => console.log('[Kick Player] Erro mesmo mutado:', e2));
+            });
+          }
+          
+          // Seletores alternativos para Kick
+          const kickVideo = document.querySelector('[class*="kick"][class*="player"] video');
+          if (kickVideo && kickVideo !== kickPlayer && kickVideo.paused) {
+            console.log('[Kick Video] Forçando autoplay...');
+            kickVideo.autoplay = true;
+            kickVideo.play().catch(e => {
+              console.log('[Kick Video] Erro ao dar play:', e);
+              kickVideo.muted = true;
+              kickVideo.play().catch(e2 => console.log('[Kick Video] Erro mesmo mutado:', e2));
+            });
           }
           
           // Força autoplay em iframes (se necessário)

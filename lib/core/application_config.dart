@@ -25,11 +25,8 @@ class ApplicationConfig {
     try {
       await windowManager.ensureInitialized();
 
-      windowManager.setSize(
-        const Size(1014, 624),
-      );
-
-      windowManager.setResizable(false);
+      windowManager.setMinimumSize(const Size(1366, 768));
+      windowManager.setSize(const Size(1366, 768));
     } catch (e, s) {
       log('Error configuring window manager: $e');
       log('StackTrace: $s');
