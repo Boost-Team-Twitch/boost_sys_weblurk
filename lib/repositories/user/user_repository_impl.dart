@@ -69,26 +69,35 @@ class UserRepositoryImpl implements UserRepository {
         throw Failure(message: 'Token de acesso não encontrado na resposta');
       }
     } on RestClientException catch (e, s) {
-      if (e.statusCode == HttpStatus.badRequest ||
+      final errorMessage = e.response.data?['message'] as String?;
+
+      if (e.statusCode == HttpStatus.notFound ||
+          e.statusCode == HttpStatus.badRequest ||
           e.statusCode == HttpStatus.forbidden) {
-        final errorMessage = e.response.data?['message'] ?? 'Erro de validação';
-        if (errorMessage.contains('User not exists') ||
-            errorMessage.contains('User not found')) {
+        if (errorMessage != null &&
+            (errorMessage.contains('User not exists') ||
+                errorMessage.contains('User not found') ||
+                errorMessage.contains('User or password invalid'))) {
           throw Failure(
-            message: 'Usuario não encontrado, entre em contato com o suporte!!',
+            message: 'Usuário ou senha inválidos',
           );
         }
+        throw Failure(message: errorMessage ?? 'Erro de autenticação');
       }
 
-      // Tratamento específico para erros de conexão
+      if (e.statusCode == HttpStatus.unauthorized) {
+        throw Failure(message: errorMessage ?? 'Credenciais inválidas');
+      }
+
       if (e.error != null && e.error.toString().contains('SocketException')) {
         throw Failure(
-            message:
-                'Erro de conexão. Verifique sua internet e tente novamente.');
+          message:
+              'Erro de conexão. Verifique sua internet e tente novamente.',
+        );
       }
 
       _logger.error('Repository - Failed to login user', e, s);
-      throw Failure(message: 'Erro ao realizar login');
+      throw Failure(message: errorMessage ?? 'Erro ao realizar login');
     } catch (e, s) {
       _logger.error('Repository - Failed to login user - 2', e, s);
       throw Failure(message: 'Erro ao realizar login - 2');
