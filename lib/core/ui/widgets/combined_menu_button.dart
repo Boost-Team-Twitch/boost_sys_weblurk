@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../features/home/presentation/viewmodels/home_viewmodel.dart';
+import '../../routes/app_routes.dart';
 import '../../services/settings_service.dart';
 import '../../services/timezone_service.dart';
 import '../../services/url_launcher_service.dart';
@@ -271,10 +273,8 @@ class _CombinedMenuButtonState extends State<CombinedMenuButton> {
           label: 'Pontuação',
           icon: Icons.leaderboard,
           iconColor: AppColors.menuIconWarning,
-          onTap: () async {
-            await widget.urlLauncherService.launchURL(
-              'https://docs.google.com/spreadsheets/d/1kh4zc2INhLEOGbLqqte8NnP4NsNRvFTgSWvKNKKM9qk/edit?usp=sharing',
-            );
+          onTap: () {
+            context.push(AppRoutes.score);
           },
         ),
         MenuItemWidget(

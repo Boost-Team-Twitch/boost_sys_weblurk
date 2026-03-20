@@ -7,6 +7,11 @@ import '../../features/auth/register/presentation/viewmodels/register_viewmodel.
 import '../../features/home/data/services/polling_services.dart';
 import '../../features/home/data/services/webview_service.dart';
 import '../../features/home/presentation/viewmodels/home_viewmodel.dart';
+import '../../features/score/data/repositories/score_repository.dart';
+import '../../features/score/data/repositories/score_repository_impl.dart';
+import '../../features/score/data/services/score_service.dart';
+import '../../features/score/data/services/score_service_impl.dart';
+import '../../features/score/presentation/viewmodels/score_viewmodel.dart';
 import '../../repositories/home/home_repository.dart';
 import '../../repositories/home/home_repository_impl.dart';
 import '../../repositories/schedule/schedule_repository.dart';
@@ -94,6 +99,13 @@ class Injector {
         logger: i(),
       ),
     );
+
+    i.registerLazySingleton<ScoreRepository>(
+      () => ScoreRepositoryImpl(
+        restClient: i(),
+        logger: i(),
+      ),
+    );
   }
 
   static Future<void> _injectServices() async {
@@ -160,6 +172,14 @@ class Injector {
         logger: i(),
       ),
     );
+
+    i.registerLazySingleton<ScoreService>(
+      () => ScoreServiceImpl(
+        repository: i(),
+        authViewModel: i(),
+        logger: i(),
+      ),
+    );
   }
 
   static Future<void> _injectControllers() async {
@@ -173,6 +193,12 @@ class Injector {
     i.registerFactory<RegisterViewModel>(
       () => RegisterViewModel(
         userService: i(),
+      ),
+    );
+
+    i.registerLazySingleton<ScoreViewModel>(
+      () => ScoreViewModel(
+        scoreService: i(),
       ),
     );
 

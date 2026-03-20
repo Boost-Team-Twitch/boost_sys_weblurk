@@ -18,19 +18,11 @@ class AuthViewModel extends ChangeNotifier {
   final LocalStorage _localStorage;
   final AppLogger _logger;
 
-  static bool _hasInitialized = false;
-
   UserModel? _userLogged;
   UserModel? get userLogged => _userLogged;
 
   Future<void> _loadUserLogged() async {
     try {
-      if (!_hasInitialized) {
-        _hasInitialized = true;
-        await logout();
-        return;
-      }
-
       final userModelJson = await _localStorage.read<String>(
         Constants.LOCAL_SOTRAGE_USER_LOGGED_DATA_KEY,
       );
