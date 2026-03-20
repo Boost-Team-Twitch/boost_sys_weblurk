@@ -56,6 +56,7 @@ class AppColors {
   static const Color menuIconDanger = Color(0xFFFF5252);
   static const Color menuIconDiscord = Color(0xFF7289DA);
   static const Color menuIconTwitch = Color(0xFF9146FF);
+  static const Color menuIconKick = Color(0xFF53FC18);
   static const Color menuIconGoogle = Color(0xFF4285F4);
   static const Color menuIconGoogleDrive = Color(0xFF34A853);
   static const Color menuBorderImproved = Color(0xFF7C4DFF);

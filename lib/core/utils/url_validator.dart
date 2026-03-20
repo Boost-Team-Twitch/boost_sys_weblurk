@@ -5,6 +5,8 @@ class UrlValidator {
     'www.twitch.tv',
     'twitch.com',
     'www.twitch.com',
+    'kick.com',
+    'www.kick.com',
     'docs.google.com',
     'discord.gg',
     'forms.gle',
@@ -109,6 +111,34 @@ class UrlValidator {
 
   static String? extractTwitchChannel(String url) {
     if (!isTwitchUrl(url)) return null;
+
+    try {
+      final uri = Uri.parse(url);
+      final pathSegments = uri.pathSegments;
+
+      if (pathSegments.isNotEmpty) {
+        return pathSegments.first;
+      }
+
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  static bool isKickUrl(String url) {
+    if (!isValidUrl(url)) return false;
+
+    try {
+      final uri = Uri.parse(url);
+      return uri.host.contains('kick');
+    } catch (e) {
+      return false;
+    }
+  }
+
+  static String? extractKickChannel(String url) {
+    if (!isKickUrl(url)) return null;
 
     try {
       final uri = Uri.parse(url);
