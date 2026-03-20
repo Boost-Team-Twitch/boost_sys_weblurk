@@ -32,6 +32,8 @@ class _LoginPageState extends State<LoginPage> {
   final _confirmPasswordEC = TextEditingController();
 
   bool _isRegisterMode = false;
+  bool _loginHandled = false;
+  bool _registerHandled = false;
   late final RegisterViewModel _registerViewModel;
 
   @override
@@ -58,6 +60,7 @@ class _LoginPageState extends State<LoginPage> {
         nickname: _nicknameEC.text,
         password: _passwordEC.text,
       );
+      _loginHandled = false;
       widget.viewModel.loginCommand.execute(params);
     }
   }
@@ -79,6 +82,7 @@ class _LoginPageState extends State<LoginPage> {
         password: _passwordEC.text,
         confirmPassword: _confirmPasswordEC.text,
       );
+      _registerHandled = false;
       _registerViewModel.registerCommand.execute(params);
     }
   }
@@ -273,13 +277,15 @@ class _LoginPageState extends State<LoginPage> {
             builder: (context, child) {
               final command = widget.viewModel.loginCommand;
 
-              if (command.completed) {
+              if (command.completed && !_loginHandled) {
+                _loginHandled = true;
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   context.go(AppRoutes.home);
                 });
               }
 
-              if (command.error) {
+              if (command.error && !_loginHandled) {
+                _loginHandled = true;
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   final error = command.result?.errorOrNull;
                   ErrorMessageService.instance.handleLoginError(error);
@@ -296,14 +302,16 @@ class _LoginPageState extends State<LoginPage> {
             builder: (context, child) {
               final command = _registerViewModel.registerCommand;
 
-              if (command.completed) {
+              if (command.completed && !_registerHandled) {
+                _registerHandled = true;
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   Messages.success('Cadastro realizado com sucesso!');
-                  _toggleMode(); // Volta para o modo de login
+                  _toggleMode();
                 });
               }
 
-              if (command.error) {
+              if (command.error && !_registerHandled) {
+                _registerHandled = true;
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   final error = command.result?.errorOrNull;
                   ErrorMessageService.instance.handleLoginError(error);
