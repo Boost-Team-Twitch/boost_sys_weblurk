@@ -3,7 +3,7 @@
 include: package:flutter_lints/flutter.yaml
 
 formatter:
-  preserve-trailing-commas: true
+  trailing_commas: preserve
 
 analyzer:
   errors:
