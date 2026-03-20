@@ -187,7 +187,19 @@ class HomeRepositoryImpl implements HomeRepository {
 
       if (response.statusCode == 200) {
         if (response.data != null) {
-          final result = ScheduleListModel.fromMap(response.data);
+          if (response.data is List) {
+            final schedules = (response.data as List)
+                .map((e) =>
+                    ScheduleModel.fromMap(e as Map<String, dynamic>))
+                .toList();
+            return ScheduleListModel(
+              listName: listName,
+              schedules: schedules,
+            );
+          }
+          final result = ScheduleListModel.fromMap(
+            response.data as Map<String, dynamic>,
+          );
           return result;
         }
         return null;
