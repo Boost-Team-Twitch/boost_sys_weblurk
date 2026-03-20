@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'core/application_config.dart';
@@ -26,11 +27,12 @@ Future<void> main() async {
 
     await ApplicationConfig().consfigureApp();
 
-    // Initialize window manager only for Windows
-    if (Platform.isWindows) {
+    // Initialize window manager only for Windows and MacOS
+    if (Platform.isWindows || Platform.isMacOS) {
       await windowManager.ensureInitialized();
       final WindowOptions windowOptions = const WindowOptions(
-        size: Size(1014, 624),
+        size: Size(1366, 768),
+        minimumSize: Size(1366, 768),
         center: true,
       );
       windowManager.waitUntilReadyToShow(windowOptions, () async {
@@ -87,12 +89,19 @@ class _WeblurklState extends State<Weblurk> {
 
   @override
   Widget build(BuildContext context) {
-    return AndroidBackButtonHandler(
-      child: MaterialApp.router(
-        routerConfig: AppRouter.router,
-        title: UiConfig.title,
-        theme: UiConfig.theme,
-      ),
+    return ScreenUtilInit(
+      designSize: const Size(1366, 768),
+      minTextAdapt: true,
+      splitScreenMode: true,
+      builder: (context, child) {
+        return AndroidBackButtonHandler(
+          child: MaterialApp.router(
+            routerConfig: AppRouter.router,
+            title: UiConfig.title,
+            theme: UiConfig.theme,
+          ),
+        );
+      },
     );
   }
 }
